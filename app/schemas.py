@@ -5,6 +5,12 @@ from typing import Optional
 class CryptocurrencyBase(BaseModel):
     symbol: str
 
+class CryptocurrencyCreate(CryptocurrencyBase):
+    pass
+
+class CryptocurrencyUpdate(BaseModel):
+    symbol: Optional[str] = None
+
 class CryptocurrencyInDB(CryptocurrencyBase):
     id: int
     created_at: datetime
