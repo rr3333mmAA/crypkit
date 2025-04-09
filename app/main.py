@@ -1,11 +1,23 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models import Cryptocurrency
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from app.endpoints import router as crypto_router
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+app.include_router(
+    crypto_router,
+    prefix="/api/cryptocurrencies",
+    tags=["cryptocurrencies"]
+)
+
 @app.get("/")
-def read_root(db: Session = Depends(get_db)):
-    cryptocurrencies = db.query(Cryptocurrency).all()
-    return cryptocurrencies
+async def root():
+    return {"status": "ok"}
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("static/favicon.svg")
