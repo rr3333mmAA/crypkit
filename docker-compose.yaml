@@ -1,4 +1,15 @@
 services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/crypkit_db
+    volumes:
+      - .:/app
+
   postgres:
     image: postgres:latest
     container_name: crypkit_postgres
