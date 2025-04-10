@@ -3,9 +3,33 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Cryptocurrency as CryptocurrencyModel
 from app.schemas import *
+from app.coingecko import CoinGeckoService
 from typing import List
 
 router = APIRouter()
+coingecko_service = CoinGeckoService()
+
+async def validate_cryptocurrency_platform(symbol: str, platform: str) -> None:
+    """Validate that the platform exists for the given cryptocurrency symbol"""
+    platforms_data = await coingecko_service.get_coins_platforms(symbol)
+    
+    if not platforms_data:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"No cryptocurrency with symbol {symbol} found on CoinGecko"
+        )
+        
+    valid_platform = False
+    for coin_id, platforms in platforms_data.items():
+        if platform in platforms:
+            valid_platform = True
+            break
+            
+    if not valid_platform:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Platform '{platform}' is not valid for cryptocurrency with symbol '{symbol}'"
+        )
 
 @router.get("/")
 async def list_cryptocurrencies(
@@ -34,9 +58,14 @@ async def create_cryptocurrency(
     db: Session = Depends(get_db)
 ) -> Cryptocurrency:
     """Create a new cryptocurrency"""
-    db_cryptocurrency = db.query(CryptocurrencyModel).filter(CryptocurrencyModel.symbol == cryptocurrency.symbol).first()
+    db_cryptocurrency = db.query(CryptocurrencyModel).filter(
+        CryptocurrencyModel.symbol == cryptocurrency.symbol,
+        CryptocurrencyModel.platform == cryptocurrency.platform
+    ).first()
     if db_cryptocurrency:
         raise HTTPException(status_code=400, detail="Cryptocurrency already registered")
+    
+    await validate_cryptocurrency_platform(cryptocurrency.symbol, cryptocurrency.platform)
     
     db_cryptocurrency = CryptocurrencyModel(**cryptocurrency.model_dump())
 
@@ -48,13 +77,18 @@ async def create_cryptocurrency(
 @router.put("/{cryptocurrency_id}", response_model=Cryptocurrency)
 async def update_cryptocurrency(
     cryptocurrency_id: int,
-    cryptocurrency: CryptocurrencyCreate,
+    cryptocurrency: CryptocurrencyUpdate,
     db: Session = Depends(get_db)
 ) -> Cryptocurrency:
     """Update a cryptocurrency"""
     db_cryptocurrency = db.query(CryptocurrencyModel).filter(CryptocurrencyModel.id == cryptocurrency_id).first()
     if db_cryptocurrency is None:
         raise HTTPException(status_code=404, detail="Cryptocurrency not found")
+    
+    # If platform is being updated, verify it exists for this cryptocurrency
+    if cryptocurrency.platform is not None and cryptocurrency.platform != db_cryptocurrency.platform:
+        symbol = cryptocurrency.symbol if cryptocurrency.symbol is not None else db_cryptocurrency.symbol
+        await validate_cryptocurrency_platform(symbol, cryptocurrency.platform)
     
     for key, value in cryptocurrency.model_dump().items():
         setattr(db_cryptocurrency, key, value)

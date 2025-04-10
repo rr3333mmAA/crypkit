@@ -4,12 +4,14 @@ from typing import Optional
 
 class CryptocurrencyBase(BaseModel):
     symbol: str
+    platform: str
 
 class CryptocurrencyCreate(CryptocurrencyBase):
     pass
 
 class CryptocurrencyUpdate(BaseModel):
     symbol: Optional[str] = None
+    platform: Optional[str] = None
 
 class CryptocurrencyInDB(CryptocurrencyBase):
     id: int

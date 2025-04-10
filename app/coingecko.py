@@ -1,5 +1,5 @@
 import httpx
-from typing import Any, Dict, List
+from typing import Any, Dict, Tuple
 
 class CoinGeckoService:
     BASE_URL = "https://api.coingecko.com/api/v3"
@@ -26,16 +26,16 @@ class CoinGeckoService:
     async def _delete(self, endpoint: str) -> None:
         raise NotImplementedError("DELETE method not implemented")
 
-    async def get_coins_by_symbol(self, symbol: str) -> List[Dict[str, Any]]:
-        """Fetch coins by symbol"""
+    async def get_coins_platforms(self, symbol: str) -> Dict[str, Tuple[str]]:
+        """Fetch coins and their platforms by symbol"""
         coins = await self._get("/coins/list?include_platform=true")
 
-        coins_ = []
+        coins_ = {}
         for coin in coins:
             if coin["symbol"].lower() == symbol.lower():
                 coin_id = coin["id"]
-                coin_platforms = tuple(coin.get("platforms", {}).keys())
-                coins_.append({"id": coin_id, "platforms": coin_platforms})
+                coin_platforms = tuple(coin.get("platforms", {}).keys()) or (coin_id, )
+                coins_[coin_id] = coin_platforms
         
         return coins_
     
