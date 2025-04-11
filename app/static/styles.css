@@ -1,0 +1,269 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Times New Roman", Times, serif;
+    line-height: 1.6;
+    color: #000;
+    background-color: #fff;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 90vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+main {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2 {
+    margin-bottom: 15px;
+}
+
+/* Crypto container styles */
+.crypto-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.crypto-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/* Favicon SVG styles */
+.crypto-favicon {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.crypto-favicon svg {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Dropdown styles */
+.add-dropdown {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 700px;
+}
+
+.add-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 220px;
+    margin-bottom: 5px;
+    background-color: #fff;
+    min-width: 200px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.add-dropdown-content.show {
+    display: block;
+}
+
+#add-dropdown-btn {
+    color: #000;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* Cryptocurrency list styles */
+.crypto-list-container {
+    width: 100%;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.crypto-list {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.crypto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.crypto-item:last-child {
+    border-bottom: none;
+}
+
+.crypto-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Inline editing styles */
+.crypto-symbol, .crypto-platform {
+    padding: 2px 4px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+}
+
+.crypto-symbol {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.crypto-platform {
+    color: #555;
+}
+
+.crypto-symbol.editable, .crypto-platform.editable {
+    border-color: #ccc;
+    background-color: #f9f9f9;
+    min-width: 60px;
+    outline: none;
+}
+
+.crypto-price {
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+.crypto-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Icon button styles */
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.icon-btn:hover {
+    opacity: 1;
+    background: none;
+}
+
+.delete-btn {
+    color: #555;
+}
+
+.check-btn {
+    color: #000;
+    display: none;
+}
+
+.check-btn.visible {
+    display: flex;
+}
+
+.icon-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Pagination controls */
+.pagination-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 700px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#current-page {
+    margin: 0 8px;
+    font-size: 14px;
+}
+
+#prev-page, #next-page {
+    padding: 5px 12px;
+    font-size: 14px;
+    color: #000;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+    display: none;
+}

@@ -22,6 +22,10 @@ app.include_router(
     tags=["cryptocurrencies"]
 )
 
+@app.get("/", include_in_schema=False)
+async def root():
+    return FileResponse("app/static/index.html")
+
 @app.get("/health", include_in_schema=False)
 async def health():
     return {"status": "ok"}
