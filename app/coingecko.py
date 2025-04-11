@@ -39,6 +39,15 @@ class CoinGeckoService:
         
         return coins_
     
+    async def get_coin_id(self, symbol: str, platform: str) -> str:
+        """Fetch coin ID by symbol and platform"""
+        coins = await self.get_coins_platforms(symbol)
+        
+        for coin_id, platforms in coins.items():
+            if platform in platforms:
+                return coin_id
+        return None
+    
     async def get_price(self, coin_id: str, currency: str) -> Dict[str, Any]:
         """Fetch price for a given coin and currency"""
         endpoint = f"/simple/price?ids={coin_id}&vs_currencies={currency}"

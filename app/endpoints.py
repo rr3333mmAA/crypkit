@@ -4,7 +4,7 @@ from app.database import get_db
 from app.models import Cryptocurrency as CryptocurrencyModel
 from app.schemas import *
 from app.coingecko import CoinGeckoService
-from typing import List
+from typing import List, Dict, Any
 
 router = APIRouter()
 coingecko_service = CoinGeckoService()
@@ -52,6 +52,32 @@ async def get_cryptocurrency(
         raise HTTPException(status_code=404, detail="Cryptocurrency not found")
     return cryptocurrency
 
+@router.get("/{cryptocurrency_id}/price")
+async def get_cryptocurrency_price(
+    cryptocurrency_id: int, 
+    currency: str = "usd", 
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """Get price for a specific cryptocurrency"""
+    cryptocurrency = db.query(CryptocurrencyModel).filter(CryptocurrencyModel.id == cryptocurrency_id).first()
+    if cryptocurrency is None:
+        raise HTTPException(status_code=404, detail="Cryptocurrency not found")
+    
+    # Get price data
+    coin_id = await coingecko_service.get_coin_id(
+        cryptocurrency.symbol, cryptocurrency.platform
+    )
+    price_data = await coingecko_service.get_price(coin_id, currency)
+    
+    if not price_data or coin_id not in price_data:
+        return {"symbol": cryptocurrency.symbol, "price": "N/A", "currency": currency}
+    
+    return {
+        "symbol": cryptocurrency.symbol,
+        "price": price_data[coin_id][currency],
+        "currency": currency
+    }
+
 @router.post("/", response_model=Cryptocurrency)
 async def create_cryptocurrency(
     cryptocurrency: CryptocurrencyCreate,
@@ -85,10 +111,7 @@ async def update_cryptocurrency(
     if db_cryptocurrency is None:
         raise HTTPException(status_code=404, detail="Cryptocurrency not found")
     
-    # If platform is being updated, verify it exists for this cryptocurrency
-    if cryptocurrency.platform is not None and cryptocurrency.platform != db_cryptocurrency.platform:
-        symbol = cryptocurrency.symbol if cryptocurrency.symbol is not None else db_cryptocurrency.symbol
-        await validate_cryptocurrency_platform(symbol, cryptocurrency.platform)
+    await validate_cryptocurrency_platform(cryptocurrency.symbol, cryptocurrency.platform)
     
     for key, value in cryptocurrency.model_dump().items():
         setattr(db_cryptocurrency, key, value)
